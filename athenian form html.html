@@ -1,0 +1,52 @@
+<p>« Looking to enroll in an Athenian Dialogue? Visit the <a href="https://ocpe.vcu.edu/vmca/athenian/">Athenian Leadership Society Dialogues homepage</a></p>
+<div class="form-wrapper">
+<h1>Athenian Dialogue Assessment Submissions</h1>
+<form id="submissionForm" novalidate>
+  <input type="hidden" name="spreadsheetId"
+         value="1DNvAjvrMpCWA-D07kOw9Uk-61PuyQ8sgPnSQRQkRN5g">
+  <input type="hidden" name="courseCode" id="courseCode">
+
+  <!-- First Name (required) -->
+  <label for="firstName">First Name *</label>
+  <input id="firstName" name="firstName">
+  <span id="firstNameErr" class="error-msg" role="alert"></span><br><br>
+
+  <!-- Last Name (required) -->
+  <label for="lastName">Last Name *</label>
+  <input id="lastName" name="lastName">
+  <span id="lastNameErr" class="error-msg" role="alert"></span><br><br>
+
+  <!-- Email (required) -->
+  <label for="email">Email *</label>
+  <input id="email" name="email" type="text">
+  <span id="emailErr" class="error-msg" role="alert"></span><br><br>
+
+  <!-- Phone (optional) -->
+  <label for="phone">Phone (optional)</label>
+  <input id="phone" name="phone" type="tel">
+  <span id="phoneErr" class="error-msg" role="alert"></span><br><br>
+
+  <!-- Municipality(required) -->
+  <label for="city">Municipality *</label>
+  <input id="city" name="city">
+  <span id="cityErr" class="error-msg" role="alert"></span><br><br>
+
+  <!-- Dialogue (required) -->
+  <label for="course">Dialogue *</label>
+  <select id="course" name="course">
+    <option value="">Loading dialogues …</option>
+  </select>
+  <span id="courseErr" class="error-msg" role="alert"></span><br><br>
+
+  <!-- File upload (keep required if you want)-->
+  <label for="fileUpload">Upload File *</label>
+  <input id="fileUpload" name="fileUpload" type="file">
+  <span id="fileUploadErr" class="error-msg" role="alert"></span><br><br>
+
+  <button type="submit">Submit</button>
+</form>
+
+<!-- existing spinner & thank‑you divs -->
+<div id="spinner"  style="display:none">Submitting…</div>
+<div id="thankYou" style="display:none">✅ Thank you, your assessment has been received! Certificate links will be sent about 30 days after the dialogue end date. If you need your certificate sooner please contact us.</div>
+</div>

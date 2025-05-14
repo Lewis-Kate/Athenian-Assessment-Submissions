@@ -1,0 +1,156 @@
+<style>
+/* ---------- centered panel ---------- */
+.form-wrapper {
+  max-width: 640px;        /* readable width */
+  margin: 40px auto;       /* centers horizontally without touching <body> */
+  padding: 30px 40px;
+  background: #fff;
+  border-radius: 6px;
+  box-shadow: 0 2px 10px rgba(0,0,0,.1);
+}
+
+/* ---------- heading ---------- */
+.form-wrapper h1 {
+  font-family: "Roboto Slab", serif;
+  font-size: 28px;
+  text-align: center;
+  margin: 0 0 25px;
+  color: #333;
+}
+
+/* ---------- field styles ---------- */
+label { display:block; font-weight:600; margin:18px 0 6px; }
+input, select, textarea {
+  width: 100%;
+  padding: 9px 10px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+.invalid   { border: 2px solid #c00 !important; }
+.error-msg { display:none; color:#c00; font-size:0.875rem; margin-top:4px; }
+
+/* ---------- submit button ---------- */
+button, input[type="submit"] {
+  background: #B02E01;
+  color: #fff;
+  font-family: "Roboto Slab", serif;
+  font-size: 21px;
+  padding: 10px 30px;
+  margin-top: 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  text-align: center;
+}
+
+button:hover, input[type="submit"]:hover { 
+    background:#D95631; 
+}
+
+ /* red asterisk on required labels */
+  label.required::after {
+    content: " *";
+    color: #c00;
+    font-weight: bold;
+  }
+
+.error-msg { 
+      color:#c00; 
+      font-size:0.875rem; 
+      display:none; 
+}
+
+  .invalid { 
+         border:2px solid #c00; 
+}
+
+    /* Style for the submission message */
+    #submissionMessage {
+      margin-top: 20px;
+      padding: 10px;
+      background-color: #e0ffe0;
+      border: 1px solid #00a000;
+      color: #006600;
+      display: none;
+    }
+    /* Spinner container style */
+    #spinner {
+      display: none;
+      margin-top: 20px;
+      text-align: center;
+    }
+    /* Simple CSS spinner style */
+    .loader {
+      border: 8px solid #f3f3f3;
+      border-top: 8px solid #3498db;
+      border-radius: 50%;
+      width: 60px;
+      height: 60px;
+      animation: spin 1s linear infinite;
+      margin: 0 auto;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+select#course {
+  width: 100%;
+  padding: 8px;
+  font-size: 1rem;
+  margin-top: 4px;
+  margin-bottom: 16px;
+}
+#courseCode {
+  display: none !important;
+  visibility: hidden;
+}
+
+/* ---------- file‑upload button‑only style ---------- */
+/* ► “Choose file…” ‑ smaller + light‑grey ◄ */
+#fileUpload {
+  border:none; 
+padding:0; 
+width:auto; 
+font:inherit; 
+cursor:pointer;
+}
+
+/* Chrome / Edge / Opera */
+#fileUpload::file-selector-button{
+  background:#ccc;          /* light grey */
+  color:#000;               /* readable on grey */
+  font-family:"Roboto Slab",serif;
+  font-size:16px;           /* smaller than Submit */
+  padding:6px 18px;
+  border:none;
+  border-radius:4px;
+}
+#fileUpload:hover::file-selector-button{ background:#bfbfbf; }
+
+#fileUpload:focus-visible::file-selector-button{
+  outline:2px solid #004085; outline-offset:2px;
+}
+
+/* Firefox */
+@-moz-document url-prefix(){
+  #fileUpload::file-upload-button{
+    background:#ccc;
+    color:#000;
+    font-family:"Roboto Slab",serif;
+    font-size:16px;
+    padding:6px 18px;
+    border:none;
+    border-radius:4px;
+  }
+  #fileUpload:hover::file-upload-button{ background:#bfbfbf; }
+  #fileUpload:focus-visible::file-upload-button{
+    outline:2px solid #004085; outline-offset:2px;
+  }
+}
+
+
+
+  </style>

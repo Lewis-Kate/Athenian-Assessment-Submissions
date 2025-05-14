@@ -1,0 +1,133 @@
+/* ===== CORS pre‑flight ===== */
+function doOptions(e){
+  return ContentService.createTextOutput("")
+         .setMimeType(ContentService.MimeType.TEXT);
+}
+
+/* ===== GET – Courses (JSON + JSONP) ===== */
+function doGet(e){
+  const ssId  = "1DNvAjvrMpCWA-D07kOw9Uk-61PuyQ8sgPnSQRQkRN5g";
+  const sheet = SpreadsheetApp.openById(ssId).getSheetByName("Courses");
+  const [hdr,...rows] = sheet.getDataRange().getValues();
+  const list = rows.map(r=>{const o={}; hdr.forEach((h,i)=>o[h.trim()]=r[i]); return o;});
+  const json = JSON.stringify(list);
+
+  const cb = e.parameter.callback;
+  if (cb){
+    return ContentService.createTextOutput(`${cb}(${json});`)
+           .setMimeType(ContentService.MimeType.JAVASCRIPT);
+  }
+  return ContentService.createTextOutput(json)
+         .setMimeType(ContentService.MimeType.JSON);
+}
+
+/* ===== POST – Save submission ===== */
+function doPost(e){
+  try{
+    const body = JSON.parse(e.postData.contents);
+
+    /* spreadsheet refs */
+    const ssId = "1DNvAjvrMpCWA-D07kOw9Uk-61PuyQ8sgPnSQRQkRN5g";
+    const ss   = SpreadsheetApp.openById(ssId);
+    const courses = ss.getSheetByName("Courses");
+    const subs    = ss.getSheetByName("Submissions");
+
+    /* facilitator lookup */
+    const [hdr,...rows] = courses.getDataRange().getValues();
+    const iCode  = hdr.findIndex(h=>h.toString().trim().toLowerCase()==="course number");
+    const iEmail = hdr.findIndex(h=>h.toString().trim().toLowerCase()==="facilitator email");
+
+    const wanted = (body.courseCode||"").trim().toUpperCase();
+    let facilitator = "";
+    if (wanted && iCode>-1 && iEmail>-1){
+      rows.some(r=>{
+        if ((r[iCode]||"").toString().trim().toUpperCase()===wanted){
+          facilitator = (r[iEmail]||"").toString().trim();
+          return true;
+        }
+        return false;
+      });
+    }
+
+    /* file upload  */
+    let fileUrl = "No File Submitted";
+    if (body.fileName && body.fileData){
+      const clean = body.course.trim().replace(/\s+/g," ")
+                       .replace(/[\\\/:*?"<>|]/g,"‑");
+      const root = getOrCreateFolderByName("Athenian Dialogue Submissions");
+      const sub  = getOrCreateSubfolder(root, clean);
+      const blob = Utilities.newBlob(
+         Utilities.base64Decode(body.fileData), undefined, body.fileName);
+      fileUrl = sub.createFile(blob).getUrl();
+    }
+
+    /* append row */
+    subs.appendRow([
+      new Date(), body.firstName, body.lastName, body.email,
+      body.city, body.phone, body.course, body.courseCode,
+      facilitator, fileUrl
+    ]);
+
+    /* mark that we have new submissions for today */
+    PropertiesService.getScriptProperties().setProperty("hasNew","true");
+
+    return ContentService.createTextOutput("OK")
+           .setMimeType(ContentService.MimeType.TEXT);
+
+  }catch(err){
+    Logger.log("doPost error: "+err);
+    return ContentService.createTextOutput("ERROR")
+           .setMimeType(ContentService.MimeType.TEXT);
+  }
+}
+
+/* ===== Daily summary ===== */
+function sendDailyInstructorSummaries(){
+  const props = PropertiesService.getScriptProperties();
+  if (props.getProperty("hasNew")!=="true") return;
+
+  const ssId = "1DNvAjvrMpCWA-D07kOw9Uk-61PuyQ8sgPnSQRQkRN5g";
+  const sheet = SpreadsheetApp.openById(ssId).getSheetByName("Submissions");
+  const [hdr,...rows] = sheet.getDataRange().getValues();
+  const iDate=0,iFirst=1,iLast=2,iCourse=6,iCode=7,iFac=8,iUrl=9;
+
+  const today = new Date(); today.setHours(0,0,0,0);
+  const byFac = {};
+  rows.forEach(r=>{
+    const d=new Date(r[iDate]); d.setHours(0,0,0,0);
+    if(+d!==+today) return;
+    const fac=r[iFac]; if(!fac) return;
+    const line=`${r[iFirst]} ${r[iLast]} – ${r[iCourse]} (${r[iCode]})\nFile: ${r[iUrl]}`;
+    (byFac[fac]=byFac[fac]||[]).push(line);
+  });
+
+  Object.keys(byFac).forEach(fac => {
+  const message =
+    "Today’s submissions:\n\n" + byFac[fac].join("\n\n");
+
+  MailApp.sendEmail({
+    to: fac,                        // facilitator
+    cc: 'coateske@vcu.edu',         // Katherine gets a copy
+    subject: 'Daily Athenian submissions',
+    body: message
+  });
+});
+
+  props.deleteProperty("hasNew");
+}
+
+/* create trigger once */
+function createDailyTrigger(){
+  ScriptApp.newTrigger("sendDailyInstructorSummaries")
+           .timeBased().everyDays(1).atHour(18).create();
+}
+
+/* ----- Drive helpers ----- */
+function getOrCreateFolderByName(n){
+  const f=DriveApp.getFoldersByName(n);
+  return f.hasNext()?f.next():DriveApp.createFolder(n);
+}
+function getOrCreateSubfolder(p,n){
+  const f=p.getFoldersByName(n);
+  return f.hasNext()?f.next():p.createFolder(n);
+}
